@@ -162,6 +162,8 @@ def parse_args():
                         help="Batch size for training/inference")
     parser.add_argument("--patience", type=int, default=50,
                         help="Early stopping patience epochs based on validation loss")
+    parser.add_argument("--no-save", action="store_true",
+                        help="Do not save result files (for testing/debugging)")
     return parser.parse_args()
 
 def main():
@@ -326,10 +328,13 @@ def main():
     if df_subjects.empty:
         print("\nCRITICAL ERROR: No records collected.")
     else:
-        df_subjects.to_csv(os.path.join(RESULT_DIR, "subject_results.csv"), index=False)
-        df_sessions.to_csv(os.path.join(RESULT_DIR, "session_results.csv"), index=False)
-        df_itr.to_csv(os.path.join(RESULT_DIR, "itr_results.csv"), index=False)
-        print(f"\nSaved CSV results to: {RESULT_DIR}")
+        if not args.no_save:
+            df_subjects.to_csv(os.path.join(RESULT_DIR, "subject_results.csv"), index=False)
+            df_sessions.to_csv(os.path.join(RESULT_DIR, "session_results.csv"), index=False)
+            df_itr.to_csv(os.path.join(RESULT_DIR, "itr_results.csv"), index=False)
+            print(f"\nSaved CSV results to: {RESULT_DIR}")
+        else:
+            print("\n[Dry Run] Results were NOT saved to disk.")
         
         # Display Final Aggregate Statistics
         print("\n" + "="*70)

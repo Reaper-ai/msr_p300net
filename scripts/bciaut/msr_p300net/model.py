@@ -39,7 +39,7 @@ class SafeEEGAugmenter(nn.Module):
                     x_aug[..., shift:] = 0
         return x_aug
 
-class StrictMultiScaleStemBlock(nn.Module):
+class MultiScaleStemBlock(nn.Module):
     def __init__(self, in_channels=1, spatial_channels=12, depth_multiplier=2, eeg_channels=8):
         super().__init__()
         self.conv_t15 = nn.Conv2d(in_channels, spatial_channels // 3, (1, 15), padding=(0, 7), bias=False)
@@ -54,7 +54,7 @@ class StrictMultiScaleStemBlock(nn.Module):
         t_concat = torch.cat([self.conv_t15(x), self.conv_t31(x), self.conv_t63(x)], dim=1)
         return F.elu(self.bn_s(self.conv_s(self.bn_t(t_concat))))
 
-class ResidualTemporalBlock(nn.Module):
+class DSTemporalBlock(nn.Module):
     def __init__(self, channels, kernel_size=5, dilation=2):
         super().__init__()
         pad = (kernel_size - 1) * dilation // 2
@@ -72,7 +72,7 @@ class ResidualTemporalBlock(nn.Module):
         out = self.bn2(self.conv2_pw(self.conv2_dw(out)))
         return F.elu(out + x)
 
-class ResidualSeparableBlock(nn.Module):
+class FeatureFusionBlock(nn.Module):
     def __init__(self, in_channels, out_channels, kernel_size=5):
         super().__init__()
         pad = kernel_size // 2
@@ -85,20 +85,19 @@ class ResidualSeparableBlock(nn.Module):
         out = self.conv_pw(self.conv_dw(x))
         return F.elu(self.bn(out) + self.skip_proj(x))
 
-class HST_P300Net(nn.Module):
+class MSR_P300NET(nn.Module):
     """
-    Hybrid Spatial-Temporal P300 Neural Network (HST-P300Net).
-    Updated to the RefinedMultiScaleEEGNet architecture from main.py, while keeping its class name.
+    Multi-Scale Refined Network (MSR_P300NET) for BCIAUT Dataset.
     """
     def __init__(self, num_channels=8, input_time_samples=140):
         super().__init__()
-        self.block1 = StrictMultiScaleStemBlock(in_channels=1, spatial_channels=12, depth_multiplier=2, eeg_channels=num_channels)
+        self.block1 = MultiScaleStemBlock(in_channels=1, spatial_channels=12, depth_multiplier=2, eeg_channels=num_channels)
         self.pool1 = nn.AvgPool2d(kernel_size=(1, 4))
         self.drop1 = nn.Dropout(0.25)
-        self.block2 = ResidualTemporalBlock(channels=24, kernel_size=5, dilation=2)
+        self.block2 = DSTemporalBlock(channels=24, kernel_size=5, dilation=2)
         self.pool2 = nn.AvgPool2d(kernel_size=(1, 4))
         self.drop2 = nn.Dropout(0.25)
-        self.block3 = ResidualSeparableBlock(in_channels=24, out_channels=32, kernel_size=5)
+        self.block3 = FeatureFusionBlock(in_channels=24, out_channels=32, kernel_size=5)
         self.pool3 = nn.AvgPool2d(kernel_size=(1, 2))
         self.drop3 = nn.Dropout(0.30)
 
@@ -121,8 +120,7 @@ class HST_P300Net(nn.Module):
 
 def apply_max_norm(model):
     """
-    Applies Max-Norm constraints on the weights of spatial convolution and linear classifier layers,
-    matching the architecture from main.py.
+    Applies Max-Norm constraints on the weights of spatial convolution and linear classifier layers.
     """
     with torch.no_grad():
         w1 = model.block1.conv_s.weight

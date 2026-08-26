@@ -14,9 +14,9 @@ from model import apply_max_norm
 class SmoothBalancedFocalLoss(nn.Module):
     """
     Computes a balanced binary focal loss with label smoothing to handle class imbalance
-    and output overconfidence. Matching parameters and implementation from main.py.
+    and output overconfidence.
     """
-    def __init__(self, gamma=2.0, pos_weight=1.0, smoothing=0.05):
+    def __init__(self, gamma=2.0, pos_weight=5.0, smoothing=0.05):
         super().__init__()
         self.gamma = gamma
         self.pos_weight = pos_weight
@@ -35,19 +35,14 @@ class SmoothBalancedFocalLoss(nn.Module):
             pt = torch.where(targets == 1.0, probs, 1.0 - probs)
         return ((1 - pt) ** self.gamma * bce_loss).mean()
 
-def train_subject_epoch(model, loader, optimizer, scheduler, criterion, amp_scaler, augmenter=None):
+def train_subject_epoch(model, loader, optimizer, scheduler, criterion, amp_scaler):
     """
-    Trains a model for a single epoch using automatic mixed precision (AMP), on-the-fly augmentation, and max-norm constraint.
+    Trains a model for a single epoch using automatic mixed precision (AMP) and max-norm constraint.
     """
     model.train()
-    if augmenter is not None:
-        augmenter.train()
     running_loss = 0.0
     for batch in loader:
-        data = batch[0]
-        if augmenter is not None:
-            data = augmenter(data)
-        target = batch[1]
+        data, target = batch[0], batch[1]
         optimizer.zero_grad(set_to_none=True)
         
         # AMP for faster training

@@ -11,10 +11,10 @@ from sklearn.metrics import f1_score, accuracy_score
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 import config
 
-def evaluate_comprehensive_metrics(model, loader, max_seq=10, n_classes=8):
+def evaluate_comprehensive_metrics(model, calibrator, loader, max_seq=10, n_classes=8):
     """
     Computes comprehensive metrics including overall accuracy, macro F1, session-wise accuracy/F1,
-    and ITR (Information Transfer Rate) across sequences using raw logit-averaging from main.py.
+    and ITR (Information Transfer Rate) across sequences using calibrated probabilities.
     """
     model.eval()
     block_scores = defaultdict(lambda: defaultdict(list))
@@ -30,13 +30,17 @@ def evaluate_comprehensive_metrics(model, loader, max_seq=10, n_classes=8):
             with torch.amp.autocast(device_type=config.DEVICE.type):
                 # Extract raw logits directly
                 logits = model(data).squeeze(1).cpu().numpy().ravel()
+                if calibrator is not None:
+                    probs = calibrator.predict_proba(logits.reshape(-1, 1))[:, 1]
+                else:
+                    probs = logits
             
-            for logit, tgt, gid, sess in zip(logits, target, group_ids, sess_ids):
+            for prob, tgt, gid, sess in zip(probs, target, group_ids, sess_ids):
                 gid = int(gid)
                 block_id, object_id = gid // 100, gid % 100
                 
-                # Append raw logits for mathematically sound averaging
-                block_scores[block_id][object_id].append(logit)
+                # Append probabilities/logits for averaging
+                block_scores[block_id][object_id].append(prob)
                     
                 block_sessions[block_id] = int(sess)
                 if int(tgt) == 1: 

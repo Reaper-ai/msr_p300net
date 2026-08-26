@@ -1,32 +1,35 @@
-# BCI P300 Detection EEG Pipeline
+# BCI P300 Detection EEG Pipelines
 
-This repository contains a modular Python pipeline for running Brain-Computer Interface (BCI) P300 detection experiments on the **BCIAUT-P300** EEG dataset. It includes our main spatial-temporal model with interpretability, alongside comparative baselines (EEGNet and P3CNET). All models reside in dedicated subfolders.
+This repository contains modular Python pipelines for running Brain-Computer Interface (BCI) P300 detection experiments on the **BCIAUT-P300** and **GIB-UVA ERP-BCI** EEG datasets. It includes spatial-temporal models alongside baseline comparison models.
 
 ---
 
 ## Directory Structure
 
-*   `datasets/bciaut/`: Raw EEG dataset files organized by subjects and sessions (e.g., `SBJ01/S01/`).
-*   `models/bciaut/`: Saved model weights of the best cross-validation folds.
-*   `results/bciaut/`: 
-    *   Our model's CSV and interpretability JSON results.
-    *   `results/bciaut/eegnet/`: Evaluation CSVs for the comparative `EEGNet` model.
-    *   `results/bciaut/p3cnet/`: Evaluation CSVs for the comparative `P3CNET` model.
-*   `plots/bciaut/`: Output target folder for visual performance plots.
-*   `scripts/bciaut/`: Source code modules:
-    *   `config.py`: Shared configurations, hyperparameters, and directory paths.
-    *   `dataset.py`: Matlab file parsing, preprocessing, signal scaling, custom datasets, and real-time GPU data augmentations.
-    *   `evaluation.py`: Shared metric calculations.
-    *   `hst_p300/`: Subfolder for our model:
-        *   `hst_p300/model.py`: Hybrid Spatial-Temporal network definition (`HST_P300Net`) and weight normalization.
-        *   `hst_p300/training.py`: Smooth Balanced Focal Loss, training, and validation loops.
-        *   `hst_p300/train.py`: Main training and saliency extraction runner.
-    *   `eegnet/`: Subfolder for baseline model 1:
-        *   `eegnet/model.py`: Baseline `EEGNet` model.
-        *   `eegnet/train.py`: Baseline training pipeline runner (stratified 80/20 split, Balanced Batch Sampler, Cross Entropy loss).
-    *   `p3cnet/`: Subfolder for baseline model 2:
-        *   `p3cnet/model.py`: Baseline `P3CNET` model (Dağ et al.).
-        *   `p3cnet/train.py`: Baseline training pipeline runner (stratified 80/20 split, weighted Cross Entropy loss, Max-Norm weight constraints, batch size 128).
+*   `datasets/`:
+    *   `datasets/bciaut/`: Raw BCIAUT dataset files organized by subjects and sessions.
+    *   `datasets/gib/`: Raw GIB HDF5 dataset file (`GIB-UVA ERP-BCI.hdf5`).
+*   `models/`:
+    *   `models/bciaut/`: Saved model weights of the best cross-validation folds for BCIAUT.
+    *   `models/gib/`: Saved model weights for the GIB MSR_P300NET model.
+*   `results/`:
+    *   `results/bciaut/`: CSV and JSON results for BCIAUT model and baselines.
+    *   `results/gib/`:
+        *   `results/gib/eeginception/`: Evaluation CSVs for the GIB EEGInception baseline.
+        *   `results/gib/p3cnet/`: Evaluation CSVs for the GIB P3CNET baseline.
+        *   `results/gib/msr_p300net/`: Evaluation CSVs and JSON interpretability maps for the GIB MSR_P300NET model.
+*   `scripts/`:
+    *   `scripts/bciaut/`: Pipeline code modules for the BCIAUT dataset:
+        *   `eegnet/`: EEGNet baseline model and training orchestrator.
+        *   `p3cnet/`: P3CNET baseline model and training orchestrator.
+        *   `msr_p300net/`: Rebranded MSR_P300NET model, training orchestrator, and interpretability map extractor.
+    *   `scripts/gib/`: Pipeline code modules for the GIB dataset:
+        *   `config.py`: Shared GIB metadata and configurations.
+        *   `dataset.py`: HDF5 loader and device data loading routines.
+        *   `evaluation.py`: Unified evaluation and ITR/accuracy calculations for GIB.
+        *   `eeginception/`: EEGInception baseline model and training orchestrator.
+        *   `p3cnet/`: P3CNET baseline model and training orchestrator.
+        *   `msr_p300net/`: Rebranded MSR_P300NET model, training orchestrator, and interpretability map extractor.
 
 ---
 
@@ -39,48 +42,51 @@ Ensure Python 3.11+ is installed, and set up your virtual environment:
 python -m venv .venv
 source .venv/bin/activate
 
-# Install dependencies (defined in pyproject.toml)
+# Install dependencies
+uv add h5py
 pip install -e .
 ```
 
 ---
 
-## Running the Pipelines
+## Running GIB Dataset Pipelines
 
 All pipelines can be executed from the command line:
 
-### 1. Running Our Model (HST-P300Net with Saliency & Model Checkpointing)
-```bash
-# Default config (All subjects 1-15, seeds [42, 1234, 777], 200 epochs)
-python scripts/bciaut/hst_p300/train.py
-
-# Debug run: Subject 1, Seed 42, 2 epochs
-python scripts/bciaut/hst_p300/train.py --subjects 1 --seeds 42 --epochs 2
-```
-
-### 2. Running Baseline 1 (EEGNet with Balanced Batch Sampler)
+### 1. EEGInception Baseline (GIB)
 No checkpoints or interpretability maps are saved for this run; it strictly produces performance CSV files.
 ```bash
-# Default config (All subjects 1-15, seeds [42, 1234, 777], 1000 epochs)
-python scripts/bciaut/eegnet/train.py
+# Default config (All subjects 0-72, seeds [42, 1234, 777], 1000 epochs)
+python scripts/gib/eeginception/train.py
 
-# Debug run: Subject 1, Seed 42, 2 epochs
-python scripts/bciaut/eegnet/train.py --subjects 1 --seeds 42 --epochs 2
+# Debug run: Subject 0, Seed 42, 2 epochs (no-save dry-run)
+python scripts/gib/eeginception/train.py --subjects 0 --seeds 42 --epochs 2 --no-save
 ```
 
-### 3. Running Baseline 2 (P3CNET with Weighted Loss & Max-Norm Constraints)
+### 2. P3CNET Baseline (GIB)
 No checkpoints or interpretability maps are saved for this run; it strictly produces performance CSV files.
 ```bash
-# Default config (All subjects 1-15, seeds [42, 1234, 777], 1000 epochs)
-python scripts/bciaut/p3cnet/train.py
+# Default config (All subjects 0-72, seeds [42, 1234, 777], 1000 epochs)
+python scripts/gib/p3cnet/train.py
 
-# Debug run: Subject 1, Seed 42, 2 epochs
-python scripts/bciaut/p3cnet/train.py --subjects 1 --seeds 42 --epochs 2
+# Debug run: Subject 0, Seed 42, 2 epochs (no-save dry-run)
+python scripts/gib/p3cnet/train.py --subjects 0 --seeds 42 --epochs 2 --no-save
 ```
 
-### Common CLI Arguments
-*   `--subjects`: List of subject IDs to process (e.g., `--subjects 1 2 3`, defaults to subjects 1-15).
+### 3. MSR_P300NET Model (GIB)
+Saves best model weights (under `models/gib/`) and interpretability maps (under `results/gib/msr_p300net/interpretability_results.json`).
+```bash
+# Default config (All subjects 0-72, seeds [42, 1234, 777], 200 epochs)
+python scripts/gib/msr_p300net/train.py
+
+# Debug run: Subject 0, Seed 42, 2 epochs (no-save dry-run)
+python scripts/gib/msr_p300net/train.py --subjects 0 --seeds 42 --epochs 2 --no-save
+```
+
+### Common GIB CLI Arguments
+*   `--subjects`: List of subject IDs to process (e.g., `--subjects 0 1 2`, defaults to subjects 0-72).
 *   `--seeds`: Random seeds to evaluate (e.g., `--seeds 42 1234`, defaults to `[42, 1234, 777]`).
-*   `--epochs`: Maximum training epochs per run (defaults to 200 for HST-P300Net, 1000 for baselines).
-*   `--batch-size`: Batch size for training/inference (defaults to 64 for HST-P300Net/EEGNet, 128 for P3CNET).
-*   `--patience`: Early stopping patience epochs based on validation loss (defaults to 20 for HST-P300Net, 50 for EEGNet, 45 for P3CNET).
+*   `--epochs`: Maximum training epochs per run (defaults to 1000 for baselines, 200 for MSR_P300NET).
+*   `--batch-size`: Batch size for training/inference (defaults to 64 for eeginception/msr_p300net, 128 for p3cnet).
+*   `--patience`: Early stopping patience epochs based on validation loss (defaults to 50 for eeginception, 45 for p3cnet, 25 for msr_p300net).
+*   `--no-save`: Dry-run mode, disables saving checkpoints, CSV results, or JSON interpretability maps to disk.
