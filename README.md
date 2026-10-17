@@ -94,3 +94,23 @@ python scripts/gib/msr_p300net/train.py --subjects 0 --seeds 42 --epochs 2 --no-
 
 
 Citation :
+
+V. J. Lawhern, A. J. Solon, N. R. Waytowich, S. M. Gordon, C. P. Hung,
+and B. J. Lance, “EEGNet: a compact convolutional neural network for
+EEG-based brain–computer interfaces,” Journal of Neural Engineering,
+vol. 15, no. 5, p. 056013, 2018
+E. Santamarı́a-Vázquez, V. Martı́nez-Cagigal, F. Vaquerizo-Villar, and
+R. Hornero, “EEG-Inception: A novel deep convolutional neural network
+for assistive ERP-based brain-computer interfaces,” IEEE Transactions
+on Neural Systems and Rehabilitation Engineering, vol. 28, no. 12, pp.
+2773–2782, 2020
+D. Borra, S. Fantozzi, and E. Magosso, “Convolutional neural network
+for a P300 brain-computer interface to improve social attention in autistic
+spectrum disorder,” in XV Mediterranean Conference on Medical and
+Biological Engineering and Computing – MEDICON 2019, J. Henriques,
+N. Neves, and P. de Carvalho, Eds. Cham: Springer, 2020, pp. 1837–
+1843.
+I. Da, L. G. Dui, S. Ferrante, A. Pedrocchi, and A. Antonietti, “Lever-
+aging deep learning techniques to improve P300-based brain computer
+interfaces,” IEEE Journal of Biomedical and Health Informatics, vol. 26,
+no. 10, pp. 4892–4902, 2022.
