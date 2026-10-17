@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+  - family-names: "Upreti"
+    given-names: "Gaurav"
+    orcid: "https://orcid.org/0009-0008-6614-5145" # Optional
+  - family-names: "Modi"
+    given-names: "Shatrughan"
+  - family-names: "Wadhera"
+    given-names: "Tanu"
+
+title: "MSR-P300Net"
+version: "1.0.0"
+doi: "10.5281/zenodo.23436523" # You can add or update this after Zenodo gives you a DOI
+date-released: 2026-10-17
+url: "https://github.com/Reaper-ai/msr_p300net"

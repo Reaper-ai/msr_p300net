@@ -90,3 +90,7 @@ python scripts/gib/msr_p300net/train.py --subjects 0 --seeds 42 --epochs 2 --no-
 *   `--batch-size`: Batch size for training/inference (defaults to 64 for eeginception/msr_p300net, 128 for p3cnet).
 *   `--patience`: Early stopping patience epochs based on validation loss (defaults to 50 for eeginception, 45 for p3cnet, 25 for msr_p300net).
 *   `--no-save`: Dry-run mode, disables saving checkpoints, CSV results, or JSON interpretability maps to disk.
+
+
+
+Citation :
