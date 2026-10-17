@@ -11,6 +11,6 @@ authors:
 
 title: "MSR-P300Net"
 version: "1.0.0"
-doi: "10.5281/zenodo.23436523" # You can add or update this after Zenodo gives you a DOI
+doi: "10.5281/zenodo.23436522" # You can add or update this after Zenodo gives you a DOI
 date-released: 2026-10-17
 url: "https://github.com/Reaper-ai/msr_p300net"
