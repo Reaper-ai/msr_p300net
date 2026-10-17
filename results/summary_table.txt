@@ -1,0 +1,113 @@
+Cross-dataset benchmark summary
+==============================================================================
+Aggregation: metric averaged over seeds (42, 1234, 777) per subject; cohort value
+is the mean +/- standard error over the subject-level averages.
+p-values: two-sided Wilcoxon signed-rank vs. proposed model on the
+subject-level averages, 10000 permutations.
+
+------------------------------------------------------------------------------
+a) BCI-UT P300 dataset
+------------------------------------------------------------------------------
+  BCIAUT EEGNet              Obj Acc (%): 89.04 +/- 2.32 (p=0.0016) | Macro F1: 88.59 +/- 2.45 (p=0.0016) | params=1.4k
+  P3CNet                     Obj Acc (%): 88.92 +/- 2.32 (p=0.0009999) | Macro F1: 88.53 +/- 2.44 (p=0.0009999) | params=4.3k
+  MSR-P300Net (Proposed)     Obj Acc (%): 92.78 +/- 1.65 | Macro F1: 92.54 +/- 1.73 | params=4.0k
+
+------------------------------------------------------------------------------
+b) GIB-UVA Dataset
+------------------------------------------------------------------------------
+  P3CNet                     Obj Acc (%): 84.43 +/- 1.97 (p=0.0002) | Macro F1: 78.22 +/- 2.43 (p=0.0002) | params=4.3k
+  EEG-Inception              Obj Acc (%): 85.04 +/- 1.88 (p=0.0002) | Macro F1: 79.01 +/- 2.38 (p=0.0002) | params=15.3k
+  MSR-P300Net (Proposed)     Obj Acc (%): 88.12 +/- 1.83 | Macro F1: 83.51 +/- 2.27 | params=4.0k
+
+------------------------------------------------------------------------------
+c) i. GIST RSVP-P300 dataset  -- P300 Speller Task$^\dagger$
+------------------------------------------------------------------------------
+  Standard EEGNet            Pairwise Acc (%): 97.34 +/- 0.67 (p=0.0146) | Macro F1: 96.28 +/- 0.84 (p=0.0042) | Trial AUC: 96.96 +/- 0.81 | params=1.3k
+  EEG-Inception              Pairwise Acc (%): 97.68 +/- 0.88 (p=0.9723) | Macro F1: 96.63 +/- 1.02 (p=0.3452) | Trial AUC: 97.18 +/- 1.05 | params=15.1k
+  MSR-P300Net (Proposed)     Pairwise Acc (%): 98.07 +/- 0.60 | Macro F1: 97.33 +/- 0.70 | Trial AUC: 97.79 +/- 0.69 | params=4.0k
+
+------------------------------------------------------------------------------
+c) ii. GIST RSVP-P300 dataset -- RSVP Task$^\dagger$
+------------------------------------------------------------------------------
+  Standard EEGNet            Seq Top-1 Acc (%): 61.59 +/- 1.72 (p=0.2622) | Macro F1: 66.34 +/- 0.49 (p=0.0002) | AUC: 69.52 +/- 0.73
+  EEG-Inception              Seq Top-1 Acc (%): 71.42 +/- 1.50 (p=0.0002) | Macro F1: 68.72 +/- 0.46 (p=0.0002) | AUC: 72.98 +/- 0.67
+  MSR-P300Net (Proposed)     Seq Top-1 Acc (%): 62.75 +/- 1.52 | Macro F1: 64.42 +/- 0.52 | AUC: 65.95 +/- 0.80
+
+==============================================================================
+LATEX SNIPPET
+==============================================================================
+
+	\begin{table}[H]
+		\centering
+		\caption{Summary of Cross-dataset benchmark performance. All metrics are reported as Mean $\pm$ Standard Error (SE)  the test}
+		\label{tab:p300_performance_tight}
+		
+		\begin{subtable}{\linewidth}
+			\centering
+			\caption*{ a) BCI-UT P300 dataset}
+			\small
+			\setlength{\tabcolsep}{4pt}
+			\begin{tabular*}{\linewidth}{@{\extracolsep{\fill}}l ccccr@{}}
+				\toprule
+				\textbf{Model Architecture} & \textbf{Obj. Dec. Acc. (\%)} & \textbf{$p$-value} & \textbf{Macro F1 (\%)} & \textbf{$p$-value} & \textbf{Params} \\
+				\midrule
+				BCIAUT EEGNet & 89.04 $\pm$ 2.32 & 0.002 & 88.59 $\pm$ 2.45 & 0.002 & 1.4k \\
+				P3CNet & 88.92 $\pm$ 2.32 & $<$0.001 & 88.53 $\pm$ 2.44 & $<$0.001 & 4.3k \\
+				\textbf{MSR-P300Net (Proposed)} & \textbf{92.78 $\pm$ 1.65} & -- & \textbf{92.54 $\pm$ 1.73} & -- & 4.0k \\
+				\bottomrule
+			\end{tabular*}
+		\end{subtable}
+		\vspace{1em}
+		\begin{subtable}{\linewidth}
+			\centering
+			\caption*{ b) GIB-UVA Dataset}
+			\small
+			\setlength{\tabcolsep}{4pt}
+			\begin{tabular*}{\linewidth}{@{\extracolsep{\fill}}l ccccr@{}}
+				\toprule
+				\textbf{Model Architecture} & \textbf{Spell. Acc.(\%)} & \textbf{$p$-value} & \textbf{Macro F1 (\%)} & \textbf{$p$-value} & \textbf{Params} \\
+				\midrule
+				P3CNet & 84.43 $\pm$ 1.97 & $<$0.001 & 78.22 $\pm$ 2.43 & $<$0.001 & 4.3k \\
+				EEG-Inception & 85.04 $\pm$ 1.88 & $<$0.001 & 79.01 $\pm$ 2.38 & $<$0.001 & 15.3k \\
+				\textbf{MSR-P300Net (Proposed)} & \textbf{88.12 $\pm$ 1.83} & -- & \textbf{83.51 $\pm$ 2.27} & -- & 4.0k \\
+				\bottomrule
+			\end{tabular*}
+		\end{subtable}
+		\vspace{1em}
+		\begin{subtable}{\linewidth}
+			\centering
+			\caption*{ c) i. GIST RSVP-P300 dataset  -- P300 Speller Task$^\dagger$}
+			\footnotesize
+			\setlength{\tabcolsep}{2pt}
+			\begin{tabular*}{\linewidth}{@{\extracolsep{\fill}}l ccccc r@{}}
+				\toprule
+				\textbf{Model Architecture} & \textbf{P. Acc. (\%)} & \textbf{$p$-value} & \textbf{Macro F1 (\%)} & \textbf{$p$-value} & \textbf{AUC (\%)} & \textbf{Params} \\
+				\midrule
+				Standard EEGNet & 97.34 $\pm$ 0.67 & 0.015 & 96.28 $\pm$ 0.84 & 0.004 & 96.96 $\pm$ 0.81 & 1.3k \\
+				EEG-Inception & 97.68 $\pm$ 0.88 & 0.972 & 96.63 $\pm$ 1.02 & 0.345 & 97.18 $\pm$ 1.05 & 15.1k \\
+				\textbf{MSR-P300Net (Proposed)} & \textbf{98.07 $\pm$ 0.60} & -- & \textbf{97.33 $\pm$ 0.70} & -- & \textbf{97.79 $\pm$ 0.69} & 4.0k \\
+				\bottomrule
+			\end{tabular*}
+		\end{subtable}
+		\vspace{1em}
+		\begin{subtable}{\linewidth}
+			\centering
+			\caption*{ c) ii. GIST RSVP-P300 dataset -- RSVP Task$^\dagger$}
+			\footnotesize
+			\setlength{\tabcolsep}{2pt}
+			\begin{tabular*}{\linewidth}{@{\extracolsep{\fill}}l ccccc@{}}
+				\toprule
+				\textbf{Model Architecture} & \textbf{Seq. Top-1 (\%)} & \textbf{$p$-value} & \textbf{Macro F1 (\%)} & \textbf{$p$-value} & \textbf{AUC(\%)} \\
+				\midrule
+				Standard EEGNet & 61.59 $\pm$ 1.72 & 0.262 & 66.34 $\pm$ 0.49 & $<$0.001 & 69.52 $\pm$ 0.73 \\
+				EEG-Inception & \textbf{71.42 $\pm$ 1.50} & $<$0.001 & \textbf{68.72 $\pm$ 0.46} & $<$0.001 & \textbf{72.98 $\pm$ 0.67} \\
+				\textbf{MSR-P300Net (Proposed)} & 62.75 $\pm$ 1.52 & -- & 64.42 $\pm$ 0.52 & -- & 65.95 $\pm$ 0.80 \\
+				\bottomrule
+			\end{tabular*}
+		\end{subtable}
+		\vspace{1em}
+		\raggedright
+		\footnotesize $^\dagger$First deep learning benchmark on GIST RSVP-P300.\\
+		\footnotesize \textbf{Obj. Dec. Acc.} = Object Decoding Accuracy; \textbf{Spell. Acc.} = Spelling Accuracy; \textbf{Seq. Top-1} = Sequence Top-1 Accuracy; \textbf{P. Acc.} = Pairwise Accuracy; \textbf{Params} = Parameter Count.\\
+		\footnotesize \textbf{$p-values$} reported are associated with Wilcoxon signed-rank test performed on the metric to the left calculated to statistically evaluate the model's performance.
+	\end{table}

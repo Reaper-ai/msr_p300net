@@ -6,7 +6,7 @@ import torch.nn.functional as F
 from collections import defaultdict
 from sklearn.metrics import f1_score, accuracy_score
 
-def evaluate_metrics(model, loader, device, model_type="softmax", max_seq=10, n_classes=36):
+def evaluate_metrics(model, loader, device, model_type="softmax", max_seq=15, n_classes=36):
     """
     Standardized metric evaluation (Accuracy, Macro F1, ITR) for GIB models.
     Supports model_type="softmax" (outputs probabilities/logits of shape [B, 2])

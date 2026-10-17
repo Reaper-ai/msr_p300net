@@ -58,6 +58,8 @@ def parse_args():
                         help="Early stopping patience")
     parser.add_argument("--no-save", action="store_true",
                         help="Do not save result files (for testing/debugging)")
+    parser.add_argument("--overwrite", action="store_true",
+                        help="Overwrite existing results and force rerun")
     return parser.parse_args()
 
 def main():
@@ -79,6 +81,15 @@ def main():
     csv_path = os.path.join(RESULT_DIR, "subject_results.csv")
     itr_csv_path = os.path.join(RESULT_DIR, "itr_results.csv")
     
+    if not args.no_save and args.overwrite:
+        for path in [csv_path, itr_csv_path]:
+            if os.path.exists(path):
+                try:
+                    os.remove(path)
+                    print(f"Overwriting: deleted existing GIB results file at: {path}")
+                except Exception as e:
+                    print(f"Warning: Could not delete: {path}: {e}")
+
     if not args.no_save:
         if os.path.exists(csv_path):
             try:

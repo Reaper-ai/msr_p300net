@@ -157,7 +157,7 @@ def parse_args():
                         help="List of subjects to run (0-72)")
     parser.add_argument("--seeds", type=int, nargs="+", default=config.SEEDS,
                         help="Seeds to run")
-    parser.add_argument("--epochs", type=int, default=200,
+    parser.add_argument("--epochs", type=int, default=500,
                         help="Max epochs")
     parser.add_argument("--batch-size", type=int, default=config.BATCH_SIZE,
                         help="Batch size")
@@ -165,6 +165,8 @@ def parse_args():
                         help="Early stopping patience")
     parser.add_argument("--no-save", action="store_true",
                         help="Do not save models or result files (for testing/debugging)")
+    parser.add_argument("--overwrite", action="store_true",
+                        help="Overwrite existing results and force rerun")
     return parser.parse_args()
 
 def main():
@@ -186,7 +188,17 @@ def main():
     existing_pairs = set()
     csv_path = os.path.join(RESULT_DIR, "subject_results.csv")
     itr_csv_path = os.path.join(RESULT_DIR, "itr_results.csv")
+    json_path = os.path.join(RESULT_DIR, "interpretability_results.json")
     
+    if not args.no_save and args.overwrite:
+        for path in [csv_path, itr_csv_path, json_path]:
+            if os.path.exists(path):
+                try:
+                    os.remove(path)
+                    print(f"Overwriting: deleted existing GIB results file at: {path}")
+                except Exception as e:
+                    print(f"Warning: Could not delete: {path}: {e}")
+
     if not args.no_save:
         if os.path.exists(csv_path):
             try:
@@ -208,9 +220,8 @@ def main():
     
     # Load existing interpretability results if they exist to avoid overwriting other subjects/seeds
     import json
-    json_path = os.path.join(RESULT_DIR, "interpretability_results.json")
     interpretability_results = {}
-    if os.path.exists(json_path):
+    if not args.no_save and not args.overwrite and os.path.exists(json_path):
         try:
             with open(json_path, "r") as f:
                 interpretability_results = json.load(f)
@@ -291,7 +302,7 @@ def main():
             model = MSR_P300NET(n_channels=8, n_samples=128).to(config.DEVICE)
             
             # Original values: lr=2e-3, weight_decay=1.5e-3, max_lr=4e-3
-            optimizer = optim.AdamW(model.parameters(), lr=1e-3, weight_decay=0.0015)
+            optimizer = optim.AdamW(model.parameters(), lr=5e-4, weight_decay=0.001)
             scheduler = optim.lr_scheduler.OneCycleLR(
                 optimizer, max_lr=5e-3, epochs=epochs, 
                 steps_per_epoch=max(1, len(train_loader)), pct_start=0.2
